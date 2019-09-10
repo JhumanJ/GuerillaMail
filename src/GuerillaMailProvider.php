@@ -13,7 +13,9 @@ class GuerillaMailProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind('guerilla-mail', function($app) {
+            return new GuerillaMailFacade();
+        });
     }
 
     /**
