@@ -1,7 +1,9 @@
 {
+    "version": "0.0.1",
     "name": "jhumanj/guerillamail",
     "description": "A PHP wrapper for the guerilla mail API.",
     "type": "api-wrapper",
+    "license": "MIT",
     "require": {
         "guzzlehttp/guzzle": "^6.3"
     },
