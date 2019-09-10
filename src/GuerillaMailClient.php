@@ -20,7 +20,7 @@ class GuerillaMailClient
 {
     const ENDPOINT = '/ajax.php';
 
-    public $baseUrl, $clientIp, $client;
+    public $baseUrl, $clientIp, $client, $emailAddress, $emailTimestamp, $sessionId;
 
     public function __construct( $baseUrl = 'http://api.guerrillamail.com', $clientIp = '127.0.0.1' )
     {
@@ -50,24 +50,49 @@ class GuerillaMailClient
             );
         }
 
-        return json_decode( $response->getBody() );
+        return json_decode( $response->getBody(), true );
     }
 
     public function getEmailAddress( $sessionId = null )
     {
-        return $this->doRequest( $sessionId, [ 'f' => 'get_email_address' ] );
-    }
+        $data = $this->doRequest( $sessionId, [ 'f' => 'get_email_address' ] );
 
-    public function getEmailList( $sessionId, $offset = 0 )
-    {
-        if ( $sessionId == null ) {
-            throw new GuerillaMailException( 'Session ID can\'t be null.' );
+        // Update details stored
+        if (isset($data['email_addr'])) {
+            $this->emailAddress = $data['email_addr'];
+        }
+        if (isset($data['email_timestamp'])) {
+            $this->emailTimestamp = $data['email_timestamp'];
+        }
+        if (isset($data['sid_token'])) {
+            $this->sessionId = $data['sid_token'];
         }
 
-        return $this->doRequest( $sessionId, [
+        return $data;
+    }
+
+    public function getEmailList( $sessionId = null, $offset = 0 )
+    {
+        if ( $sessionId == null ) {
+            if ($this->sessionId == null) {
+                throw new GuerillaMailException( 'Session ID can\'t be null.' );
+            }
+            $sessionId = $this->sessionId;
+        }
+
+        $data = $this->doRequest( $sessionId, [
             'f'      => 'get_email_list',
             'offset' => $offset
         ] );
+
+        $emails = [];
+        if (isset($data['list'])) {
+            foreach ($data['list'] as $email) {
+                $emails[] = Mail::fromResponse($email);
+            }
+        }
+
+        return $emails;
     }
 
     public function getEmail( $emailId, $sessionId = null )
@@ -85,7 +110,7 @@ class GuerillaMailClient
             throw new GuerillaMailException('Not found: '.$emailId);
         }
 
-        return $data;
+        return Mail::fromResponse( $data );
     }
 
     public function setEmailAddress( $email, $sessionId = null )
