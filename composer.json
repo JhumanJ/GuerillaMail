@@ -1,0 +1,29 @@
+{
+    "name": "jhumanj/guerillamail",
+    "description": "A PHP wrapper for the guerilla mail API.",
+    "type": "api-wrapper",
+    "require": {
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "authors": [
+        {
+            "name": "JhumanJ",
+            "email": "julien@nahum.net"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "JhumanJ\\GuerillaMail\\GuerillaMailProvider"
+            ],
+            "aliases": {
+                "GuerillaMail": "JhumanJ\\GuerillaMail\\GuerillaMailFacade"
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "JhumanJ\\GuerillaMail\\": "src/"
+        }
+    }
+}
