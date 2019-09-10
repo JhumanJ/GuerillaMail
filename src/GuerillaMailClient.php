@@ -31,7 +31,7 @@ class GuerillaMailClient
 
     private function doRequest( $sessionId = null, Array $params = [] )
     {
-        $url = $this->baseUrl + self::ENDPOINT;
+        $url = $this->baseUrl . self::ENDPOINT;
         $params['ip'] = $this->clientIp;
 
         if ( $sessionId != null ) {
